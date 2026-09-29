@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "product": "国际培训名额配置",
+  "source_context": "https://world.people.com.cn/n1/2026/0924/c1002-40804903.html",
+  "actors": [
+    "培训主办方",
+    "参训院校",
+    "项目协调员"
+  ],
+  "states": [
+    "申报",
+    "试算",
+    "分配",
+    "确认",
+    "递补"
+  ],
+  "invariants": [
+    "多维配额",
+    "最低保障",
+    "候补递补",
+    "尾差归属"
+  ],
+  "sample_cases": [
+    {
+      "case_id": "09303-007-A",
+      "actor": "培训主办方",
+      "state": "申报"
+    },
+    {
+      "case_id": "09303-007-B",
+      "actor": "项目协调员",
+      "state": "试算"
+    }
+  ],
+  "tags": [
+    "training-quota",
+    "fair-distribution"
+  ]
+}
