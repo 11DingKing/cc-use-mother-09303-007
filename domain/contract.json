@@ -5,7 +5,8 @@
   "actors": [
     "培训主办方",
     "参训院校",
-    "项目协调员"
+    "项目协调员",
+    "名额管理办公室"
   ],
   "states": [
     "申报",
@@ -14,12 +15,39 @@
     "确认",
     "递补"
   ],
+  "state_mapping": {
+    "申报": "draft：维护批次容量、维度容量、最低保障、院校申请、资格与历史参与系数",
+    "试算": "scenario：多套试算基于不可变输入快照并行存在、可对比，不产生正式额度",
+    "分配": "published：选定试算发布，输入冻结，正式额度以初始分录建立",
+    "确认": "confirmed：入选院校逐校确认；全部持有者确认后进入该状态",
+    "递补": "published 阶段的 waitlist_promote：放弃/撤销释放名额后按候补顺序递补"
+  },
   "invariants": [
     "多维配额",
     "最低保障",
     "候补递补",
     "尾差归属"
   ],
+  "invariant_enforcement": {
+    "多维配额": "总容量与国家/院校类型/专业方向三维容量在每席发放与每条额度分录落账时校验，超额拒绝（OVERSELL/DIMENSION_OVERSELL）",
+    "最低保障": "发布前按维度预留保障席位；需求或容量不足时记录 guarantee_shortfalls，绝不凭空造名额；保障之和超过维度容量在录入时即拒绝",
+    "候补递补": "零名额院校先于部分满足院校排序，历史参与少者优先；主动放弃者退出本轮自动递补；每次递补仍走容量校验",
+    "尾差归属": "全部份额用 fractions.Fraction 精确计算，最大余额法逐席分发，每个尾差名额通过 RoundingTrace 记录归属院校、精确份额与规则"
+  },
+  "ledger_entry_kinds": [
+    "initial",
+    "relinquish",
+    "revoke",
+    "transfer_out",
+    "transfer_in",
+    "waitlist_promote",
+    "adjustment"
+  ],
+  "concurrency": {
+    "locking": "批次级 RLock 串行化所有写操作，容量校验在锁内完成",
+    "optimistic_version": "写接口携带 version，过期提交返回 VERSION_CONFLICT(409)",
+    "guarantee": "并发确认、放弃与递补不可能超发，任何机构余额不会为负"
+  },
   "sample_cases": [
     {
       "case_id": "09303-007-A",
@@ -34,6 +62,8 @@
   ],
   "tags": [
     "training-quota",
-    "fair-distribution"
+    "fair-distribution",
+    "quota-ledger",
+    "largest-remainder"
   ]
 }
