@@ -6,3 +6,7 @@ __pycache__/
 *.sqlite3
 dist/
 build/
+# 服务运行期数据与文件锁
+data/
+*.json.lock
+*.json.tmp
